@@ -24,10 +24,15 @@ const LoginForm: React.FC = () => {
         },
     });
     const onSubmit = async (data: LoginFormData) => {
-        const {status,message} = await loginAction(data);
+        const {status,message,role} = await loginAction(data);
         if(status){
             toast.success(message);
-            router.push('/');
+            // redirect user based upon role.
+            switch(role){
+                case "admin": return router.push('/dashboard/admin');
+                case "applicant": return router.push('/dashboard/applicant');
+                case "employer": return router.push('/dashboard/employer');
+            }
         }else{
             toast.error(message);
         }
