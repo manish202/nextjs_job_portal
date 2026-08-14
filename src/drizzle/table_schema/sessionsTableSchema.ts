@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm/_relations';
 import { mysqlTable, int, varchar, text, datetime } from 'drizzle-orm/mysql-core';
 import usersTableSchema from './usersTableSchema';
 
@@ -11,5 +12,12 @@ const sessionsTableSchema = mysqlTable('sessions', {
     updatedAt: datetime("updated_at").defaultNow().notNull().onUpdateNow(),
     expiresAt: datetime("expires_at").notNull(),
 });
+
+export const sessionsRelations = relations(sessionsTableSchema, ({one}) => ({
+    user: one(usersTableSchema,{
+        fields: [sessionsTableSchema.userId],
+        references: [usersTableSchema.id],
+    }),
+}));
 
 export default sessionsTableSchema;
