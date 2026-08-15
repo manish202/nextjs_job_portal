@@ -16,6 +16,7 @@ CREATE TABLE `applicants` (
 --> statement-breakpoint
 CREATE TABLE `employers` (
 	`id` int PRIMARY KEY,
+	`company_name` varchar(200),
 	`description` text,
 	`avatar_url` text,
 	`banner_image_url` text,

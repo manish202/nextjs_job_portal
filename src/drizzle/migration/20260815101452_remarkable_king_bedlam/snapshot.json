@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "mysql",
-  "id": "487c77d0-5bf1-48e4-864a-e5b979c88e7c",
+  "id": "8f5cacc4-e33d-4bb3-9c5f-e8f8126e23f8",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -215,6 +215,20 @@
       "collation": null,
       "generated": null,
       "name": "id",
+      "entityType": "columns",
+      "table": "employers"
+    },
+    {
+      "type": "varchar(200)",
+      "notNull": false,
+      "autoIncrement": false,
+      "default": null,
+      "onUpdateNow": false,
+      "onUpdateNowFsp": null,
+      "charSet": null,
+      "collation": null,
+      "generated": null,
+      "name": "company_name",
       "entityType": "columns",
       "table": "employers"
     },

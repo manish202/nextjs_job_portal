@@ -3,6 +3,7 @@ import usersTableSchema from "@/drizzle/table_schema/usersTableSchema";
 
 const employersTableSchema = mysqlTable('employers', {
     id: int("id").primaryKey().references(() => usersTableSchema.id, {onDelete: "cascade"}),
+    company_name: varchar("company_name",{ length: 200 }),
     description: text("description"),
     avatarUrl: text("avatar_url"),
     bannerImageUrl: text("banner_image_url"),
