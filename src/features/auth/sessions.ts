@@ -6,6 +6,8 @@ import usersTableSchema from "@/drizzle/table_schema/usersTableSchema";
 import sessionsTableSchema from "@/drizzle/table_schema/sessionsTableSchema";
 import { headers, cookies } from "next/headers";
 import crypto from "crypto";
+import applicantsTableSchema from "@/drizzle/table_schema/applicantsTableSchema";
+import employersTableSchema from "@/drizzle/table_schema/employersTableSchema";
 
 const SESSION_LIFETIME = 30*24*60*60;
 
@@ -85,3 +87,17 @@ export const getCurrentUser = cache(async () => {
         return {status: false, message: error.message};
     }
 });
+
+export const getCurrentUserDetails = async (role: 'applicant'|'employer') => {
+    try{
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(role !== user?.role) return {status: false,message: "Forbidden"};
+        const [table,id] = role === 'applicant' ? [applicantsTableSchema,applicantsTableSchema.id] : [employersTableSchema,employersTableSchema.id];
+        const [userDetails] = await db.select().from(table).where(eq(id,user.id));
+        if(!userDetails) return {status: false, message: "User does not exists"};
+        return {status: true, user, userDetails};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}

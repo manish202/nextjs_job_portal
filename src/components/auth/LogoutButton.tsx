@@ -23,13 +23,13 @@ const LogoutButton = () => {
         <DropdownMenu>
             <DropdownMenuTrigger
                 render={
-                    <Button variant="outline">
+                    <Button variant="outline" className="w-full justify-center">
                         <LogOut className="h-4 w-4" />
                         Logout
                     </Button>
                 }
             />
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="center" className="w-48">
                 <DropdownMenuItem onClick={() => logoutUser('current_device')}>
                     <LogOut className="mr-2 h-4 w-4" /> Current device
                 </DropdownMenuItem>
