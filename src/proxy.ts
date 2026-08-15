@@ -18,6 +18,14 @@ export const proxy = async (request: NextRequest) => {
         const {path} = protectedRoutes.find(({role}) => role === user?.role) ?? {path:"/login"};
         if(!pathname.startsWith(path)) return NextResponse.redirect(new URL(path, request.url));
     }
+    // if user is already loggedin then redirect them.
+    if(['/login','/register'].includes(pathname)){
+        const {status,message,user} = await getCurrentUser();
+        if(status){
+            const {path} = protectedRoutes.find(({role}) => role === user?.role) ?? {path:"/"};
+            return NextResponse.redirect(new URL(path, request.url));
+        }
+    }
     return NextResponse.next();
 }
 
