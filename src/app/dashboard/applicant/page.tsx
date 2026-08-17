@@ -1,14 +1,13 @@
 import React from "react";
 import { getCurrentUser } from "@/features/auth/sessions";
-import LogoutButton from "@/components/auth/LogoutButton";
+import { WelcomeCard } from "@/components/dashboard/OverviewCards";
 
 const ApplicantDashboardPage: React.FC = async () => {
     const {user} = await getCurrentUser();
     return (
-        <>
-            <h1>ApplicantDashboardPage</h1>
-            <LogoutButton />
-        </>
+        <div className="space-y-8">
+            <WelcomeCard name={user?.name} />
+        </div>
     )
 }
 

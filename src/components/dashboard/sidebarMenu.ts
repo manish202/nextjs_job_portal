@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, PlusIcon, Building2, Users, Settings } from "lucide-react";
+import { LayoutDashboard, PlusIcon, Building2, SearchIcon, Users, Settings } from "lucide-react";
 
 export const employerMenu = [
     {
@@ -31,7 +31,16 @@ export const employerMenu = [
 ];
 
 export const applicantMenu = [
-    
+    {
+        title: "Home",
+        href: "/dashboard/applicant",
+        icon: LayoutDashboard,
+    },
+    {
+        title: "Find Jobs",
+        href: "/dashboard/applicant/find-jobs",
+        icon: SearchIcon,
+    },
 ];
 
 export const adminMenu = [
