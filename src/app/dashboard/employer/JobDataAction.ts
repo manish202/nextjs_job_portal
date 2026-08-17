@@ -51,3 +51,21 @@ export const updateJobDataAction = async (data:JobPostUpdateFormData) => {
         return {status: false, message: error.message};
     }
 }
+
+export type DeleteJobDataAction = {status:boolean,message:string};
+
+export const deleteJobDataAction = async (jobId:number):Promise<DeleteJobDataAction> => {
+    try{
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'employer') return {status: false,message: "forbidden"};
+        await db.delete(jobsTableSchema)
+        .where(and(
+            eq(jobsTableSchema.id,jobId),
+            eq(jobsTableSchema.employerId,user.id),
+        ));
+        return {status: true, message: "Data deleted successfully"};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}

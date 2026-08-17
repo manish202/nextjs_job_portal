@@ -5,11 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { type Job, currencySymbols } from "@/drizzle/table_schema/jobsTableSchema";
+import { deleteJobDataAction, type DeleteJobDataAction } from "@/app/dashboard/employer/JobDataAction";
+import { toast } from "react-toastify";
 
-const JobPostCard = ({job}:{job:Job}) => {
+const JobPostCard = ({job,fetchJobs}:{job:Job,fetchJobs:() => void}) => {
     const handleDelete = async (jobId: number) => {
         if(confirm("Are you sure you want to delete this job?")){
-            
+            const response: DeleteJobDataAction = await deleteJobDataAction(jobId);
+            toast[response.status ? 'success':'error'](response.message);
+            if(response.status) fetchJobs();
         }
     }
     return (
