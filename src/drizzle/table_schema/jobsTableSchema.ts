@@ -1,6 +1,7 @@
 import { relations } from 'drizzle-orm/_relations';
 import { mysqlTable, mysqlEnum, int, varchar, text, boolean, datetime } from 'drizzle-orm/mysql-core';
 import employersTableSchema from './employersTableSchema';
+import { InferSelectModel } from "drizzle-orm";
 
 export const SALARY_CURRENCY = ["USD","EUR","GBP","CAD","AUD","JPY","INR","NPR"] as const;
 export const SALARY_PERIOD = ["hourly","monthly","yearly"] as const;
@@ -8,6 +9,16 @@ export const JOB_TYPE = ["remote","hybrid","on-site"] as const;
 export const WORK_TYPE = ["full-time","part-time","contract","temporary","freelance"] as const;
 export const JOB_LEVEL = ["internship","entry-level","junior","mid-level","senior-level","lead","manager","director","executive"] as const;
 export const MIN_EDUCATION = ["none","high-school","undergraduate","masters","phd"] as const;
+export const currencySymbols: Record<string, string> = {
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    CAD: "CA$",
+    AUD: "A$",
+    JPY: "¥",
+    INR: "₹",
+    NPR: "रू",
+}
 
 const jobsTableSchema = mysqlTable('jobs', {
     id: int("id").primaryKey().autoincrement(),
@@ -37,5 +48,7 @@ export const jobsRelations = relations(jobsTableSchema, ({one}) => ({
         references: [employersTableSchema.id],
     }),
 }));
+
+export type Job = InferSelectModel<typeof jobsTableSchema>;
 
 export default jobsTableSchema;

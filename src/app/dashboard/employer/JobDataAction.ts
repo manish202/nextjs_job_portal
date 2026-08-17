@@ -1,10 +1,25 @@
 'use server';
 
 import { getCurrentUser } from "@/features/auth/sessions";
-import jobsTableSchema from "@/drizzle/table_schema/jobsTableSchema";
+import jobsTableSchema, { type Job } from "@/drizzle/table_schema/jobsTableSchema";
 import { and, eq } from 'drizzle-orm';
 import db from "@/config/db";
 import { type JobPostInsertFormData, type JobPostUpdateFormData } from "@/zod_schema/jobSchema";
+
+export type GetJobDataResponse = { status: true, data: Job[] } | { status: false, message: string };
+
+export const getJobDataAction = async (): Promise<GetJobDataResponse> => {
+    try{
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'employer') return {status: false,message: "forbidden"};
+        const data: Job[] = await db.select().from(jobsTableSchema)
+        .where(eq(jobsTableSchema.employerId,user?.id!));
+        return {status: true, data};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}
 
 export const insertJobDataAction = async (data:JobPostInsertFormData) => {
     try{
