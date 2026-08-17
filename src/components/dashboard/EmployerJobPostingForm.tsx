@@ -2,7 +2,7 @@
 
 import { useForm, Controller, type UseFormReturn, type FieldPath, type FieldValues, type SubmitHandler, } from "react-hook-form";
 import { addJobSchema, updateJobSchema, type JobPostInsertFormData, type JobPostUpdateFormData } from "@/zod_schema/jobSchema";
-import { SALARY_CURRENCY, SALARY_PERIOD, JOB_TYPE, WORK_TYPE, JOB_LEVEL, MIN_EDUCATION } from "@/drizzle/table_schema/jobsTableSchema";
+import { type Job, SALARY_CURRENCY, SALARY_PERIOD, JOB_TYPE, WORK_TYPE, JOB_LEVEL, MIN_EDUCATION } from "@/drizzle/table_schema/jobsTableSchema";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -243,7 +243,7 @@ export const EmployerJobPostingAddForm = () => {
     )
 }
 
-export const EmployerJobPostingUpdateForm = ({initialData}:{initialData:JobPostUpdateFormData}) => {
+export const EmployerJobPostingUpdateForm = ({initialData}:{initialData:JobPostUpdateFormData | Job}) => {
     const router = useRouter();
     const form = useForm<JobPostUpdateFormData>({
         resolver: zodResolver(updateJobSchema),

@@ -21,6 +21,21 @@ export const getJobDataAction = async (): Promise<GetJobDataResponse> => {
     }
 }
 
+export type GetSingleJobDataResponse = { status: true, data: Job } | { status: false, message: string };
+
+export const getSingleJobDataAction = async (job_id:number): Promise<GetSingleJobDataResponse> => {
+    try{
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'employer') return {status: false,message: "forbidden"};
+        const [data] = await db.select().from(jobsTableSchema)
+        .where(eq(jobsTableSchema.id,job_id));
+        return {status: true, data};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}
+
 export const insertJobDataAction = async (data:JobPostInsertFormData) => {
     try{
         const {status,message,user} = await getCurrentUser();
