@@ -8,16 +8,16 @@ export const employerMenu = [
         href: "/dashboard/employer",
         icon: LayoutDashboard,
     },
-    // {
-    //     title: "Post a Job",
-    //     href: "/dashboard/employer/post-job",
-    //     icon: PlusIcon,
-    // },
-    // {
-    //     title: "My Jobs",
-    //     href: "/dashboard/employer/my-jobs",
-    //     icon: Building2,
-    // },
+    {
+        title: "Post a Job",
+        href: "/dashboard/employer/post-job",
+        icon: PlusIcon,
+    },
+    {
+        title: "My Jobs",
+        href: "/dashboard/employer/my-jobs",
+        icon: Building2,
+    },
     // {
     //     title: "Saved Candidates",
     //     href: "/dashboard/employer/saved-candidates",
