@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/features/auth/sessions";
 import jobsTableSchema from "@/drizzle/table_schema/jobsTableSchema";
 import employersTableSchema from "@/drizzle/table_schema/employersTableSchema";
 import usersTableSchema from "@/drizzle/table_schema/usersTableSchema";
-import { SALARY_CURRENCY, SALARY_PERIOD, WORK_TYPE, } from "@/drizzle/table_schema/jobsTableSchema";
+import { SALARY_CURRENCY, SALARY_PERIOD, WORK_TYPE, JOB_TYPE, JOB_LEVEL, MIN_EDUCATION } from "@/drizzle/table_schema/jobsTableSchema";
 import { and, or, eq, gte, isNull, desc } from 'drizzle-orm';
 import db from "@/config/db";
 
@@ -65,3 +65,76 @@ export const getAllJobDataAction = async (): Promise<GetAllJobDataResponse> => {
 
 // agar tum getAllJobDataAction function k andar se data return kar rahe hote to ye shortcut use kar pate.
 // type ApplicantJob = Awaited<ReturnType<typeof getAllJobDataAction>>[number];
+
+type JobType = typeof JOB_TYPE[number];
+type JobLevel = typeof JOB_LEVEL[number];
+type MinEducation = typeof MIN_EDUCATION[number];
+
+export interface SingleApplicantJob extends ApplicantJob{
+    jobType: JobType | null;
+    jobLevel: JobLevel | null;
+    minEducation: MinEducation | null;
+    experience: string | null;
+    tags: string | null;
+    avatarUrl: string | null;
+    bannerImageUrl: string | null;
+    organizationType: string | null;
+    employerDesc: string | null;
+    employerLocation: string | null;
+    teamSize: string | null;
+    yearOfEstablishment: number | null;
+    websiteUrl: string | null;
+    employerId: number;
+}
+
+export type GetSingleJobDetailsResponse = { status: true, data: SingleApplicantJob } | { status: false, message: string };
+
+export const getSingleJobDetailsAction = async (job_id:number): Promise<GetSingleJobDetailsResponse> => {
+    try{
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'applicant') return {status: false,message: "forbidden"};
+        const data: SingleApplicantJob[] = await db.select({
+            id: jobsTableSchema.id,
+            title: jobsTableSchema.title,
+            description: jobsTableSchema.description,
+            minSalary: jobsTableSchema.minSalary,
+            maxSalary: jobsTableSchema.maxSalary,
+            salaryCurrency: jobsTableSchema.salaryCurrency,
+            salaryPeriod: jobsTableSchema.salaryPeriod,
+            location: jobsTableSchema.location,
+            workType: jobsTableSchema.workType,
+            createdAt: jobsTableSchema.createdAt,
+            companyName: employersTableSchema.company_name,
+            jobType: jobsTableSchema.jobType,
+            jobLevel: jobsTableSchema.jobLevel,
+            minEducation: jobsTableSchema.minEducation,
+            experience: jobsTableSchema.experience,
+            tags: jobsTableSchema.tags,
+            avatarUrl: employersTableSchema.avatarUrl,
+            bannerImageUrl: employersTableSchema.bannerImageUrl,
+            organizationType: employersTableSchema.organizationType,
+            employerDesc: employersTableSchema.description,
+            employerLocation: employersTableSchema.location,
+            teamSize: employersTableSchema.teamSize,
+            yearOfEstablishment: employersTableSchema.yearOfEstablishment,
+            websiteUrl: employersTableSchema.websiteUrl,
+            employerId: employersTableSchema.id,
+        }).from(jobsTableSchema)
+        .innerJoin(employersTableSchema,eq(jobsTableSchema.employerId,employersTableSchema.id))
+        .innerJoin(usersTableSchema,eq(employersTableSchema.id,usersTableSchema.id))
+        .where(and(
+            eq(jobsTableSchema.id,job_id),
+            isNull(jobsTableSchema.deletedAt),
+            or(
+                isNull(jobsTableSchema.expiresAt),
+                gte(jobsTableSchema.expiresAt,today)
+            )
+        ));
+        return {status: true, data: data[0]};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}
