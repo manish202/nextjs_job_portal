@@ -48,7 +48,13 @@ export const OverviewCard = ({cls,icon,title,nums}: OverviewCardProps) => {
     )
 }
 
-export const ProfileIncompleteWarning = () => {
+type Props = {
+    title: string,
+    desc: string,
+    settingPage:string
+}
+
+export const ProfileIncompleteWarning = ({title,desc,settingPage}:Props) => {
     return (
         <Card className="border border-amber-200 bg-amber-50 shadow-sm">
             <CardContent className="flex items-center justify-between gap-4 p-4">
@@ -57,17 +63,12 @@ export const ProfileIncompleteWarning = () => {
                         <AlertTriangle className="h-5 w-5" />
                     </div>
                     <div>
-                        <p className="font-medium text-amber-900">
-                            Your employer profile is incomplete
-                        </p>
-                        <p className="text-sm text-amber-700">
-                            Complete your profile to attract more candidates and
-                            improve your hiring experience.
-                        </p>
+                        <p className="font-medium text-amber-900">{title}</p>
+                        <p className="text-sm text-amber-700">{desc}</p>
                     </div>
                 </div>
                 <Link
-                    href="/dashboard/employer/settings"
+                    href={settingPage}
                     className="shrink-0 text-sm font-semibold text-amber-700 underline underline-offset-4 hover:text-amber-900"
                 >
                     Complete Profile
