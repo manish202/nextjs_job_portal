@@ -3,7 +3,7 @@ import { getSingleJobDetailsAction, type GetSingleJobDetailsResponse } from "@/a
 
 type Props = { params: Promise<{ job_id: string}>}
 
-const EmployerJobPostingPage = async ({params}:Props) => {
+const ApplicantJobShowingPage = async ({params}:Props) => {
     const {job_id} = await params;
     if(isNaN(Number(job_id))) return <h1>Invalid Job Id</h1>
     const response: GetSingleJobDetailsResponse = await getSingleJobDetailsAction(Math.abs(parseInt(job_id)));
@@ -16,4 +16,4 @@ const EmployerJobPostingPage = async ({params}:Props) => {
     )
 }
 
-export default EmployerJobPostingPage;
+export default ApplicantJobShowingPage;
