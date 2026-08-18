@@ -110,7 +110,7 @@ type ReusableCalenderProps<T extends FieldValues> = {
     placeholder: string;
 };
 
-const ReusableCalender = <T extends FieldValues>({form,fieldName,label,placeholder}:ReusableCalenderProps<T>) => {
+export const ReusableCalender = <T extends FieldValues>({form,fieldName,label,placeholder}:ReusableCalenderProps<T>) => {
     const expiresAt = form.watch(fieldName);
     const error = form.formState.errors[fieldName];
     return (
