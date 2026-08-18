@@ -39,6 +39,7 @@ const jobsTableSchema = mysqlTable('jobs', {
     isFeatured: boolean("is_featured").default(false).notNull(),
     createdAt: datetime("created_at").defaultNow().notNull(),
     updatedAt: datetime("updated_at").defaultNow().notNull().onUpdateNow(),
+    deletedAt: datetime("deleted_at"),
     expiresAt: datetime("expires_at"),
 });
 

@@ -41,8 +41,10 @@ export const insertJobDataAction = async (data:JobPostInsertFormData) => {
         const {status,message,user} = await getCurrentUser();
         if(!status) return {status,message};
         if(user?.role !== 'employer') return {status: false,message: "forbidden"};
-        const { id, ...insertData } = data;
-        await db.insert(jobsTableSchema).values({...insertData,employerId: user.id,});
+        const { id, expiresAt, ...insertData } = data;
+        const expiryDate = expiresAt ? new Date(expiresAt) : null;
+        if(expiryDate){ expiryDate.setUTCHours(0,0,0,0); }
+        await db.insert(jobsTableSchema).values({...insertData,expiresAt:expiryDate,employerId: user.id,});
         return {status: true, message: "Data inserted successfully"};
     }catch(error:any){
         return {status: false, message: error.message};
@@ -54,9 +56,11 @@ export const updateJobDataAction = async (data:JobPostUpdateFormData) => {
         const {status,message,user} = await getCurrentUser();
         if(!status) return {status,message};
         if(user?.role !== 'employer') return {status: false,message: "forbidden"};
-        const { id, ...updateData } = data;
+        const { id, expiresAt, ...updateData } = data;
+        const expiryDate = expiresAt ? new Date(expiresAt) : null;
+        if(expiryDate){ expiryDate.setUTCHours(0,0,0,0); }
         if(typeof id !== "number") return {status: false,message: "invalid id"};
-        await db.update(jobsTableSchema).set({...updateData,employerId: user.id,})
+        await db.update(jobsTableSchema).set({...updateData,expiresAt:expiryDate,employerId: user.id,})
         .where(and(
             eq(jobsTableSchema.id,id),
             eq(jobsTableSchema.employerId,user.id),
