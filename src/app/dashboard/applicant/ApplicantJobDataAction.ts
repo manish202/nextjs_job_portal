@@ -5,8 +5,9 @@ import jobsTableSchema from "@/drizzle/table_schema/jobsTableSchema";
 import employersTableSchema from "@/drizzle/table_schema/employersTableSchema";
 import usersTableSchema from "@/drizzle/table_schema/usersTableSchema";
 import { SALARY_CURRENCY, SALARY_PERIOD, WORK_TYPE, JOB_TYPE, JOB_LEVEL, MIN_EDUCATION } from "@/drizzle/table_schema/jobsTableSchema";
-import { and, or, eq, gte, isNull, desc } from 'drizzle-orm';
+import { and, or, eq, gte, isNull, desc, like } from 'drizzle-orm';
 import db from "@/config/db";
+// import { type DefaultValues } from "@/components/dashboard/ApplicantJobCardContainer";
 
 type SalaryCurrency = typeof SALARY_CURRENCY[number];
 type SalaryPeriod = typeof SALARY_PERIOD[number];
@@ -28,13 +29,32 @@ export interface ApplicantJob{
 
 export type GetAllJobDataResponse = { status: true, data: ApplicantJob[] } | { status: false, message: string };
 
-export const getAllJobDataAction = async (): Promise<GetAllJobDataResponse> => {
+export const getAllJobDataAction = async (filterData:any): Promise<GetAllJobDataResponse> => {
     try{
         const today = new Date();
         today.setHours(0,0,0,0);
         const {status,message,user} = await getCurrentUser();
         if(!status) return {status,message};
         if(user?.role !== 'applicant') return {status: false,message: "forbidden"};
+        const conditions = [
+            isNull(jobsTableSchema.deletedAt),
+            or(
+                isNull(jobsTableSchema.expiresAt),
+                gte(jobsTableSchema.expiresAt,today)
+            )
+        ];
+        if(filterData.search !== ""){
+            conditions.push(like(jobsTableSchema.title, `%${filterData.search}%`));
+        }
+        if(JOB_TYPE.includes(filterData.jobType)){
+            conditions.push(eq(jobsTableSchema.jobType, filterData.jobType));
+        }
+        if(WORK_TYPE.includes(filterData.workType)){
+            conditions.push(eq(jobsTableSchema.workType, filterData.workType));
+        }
+        if(JOB_LEVEL.includes(filterData.jobLevel)){
+            conditions.push(eq(jobsTableSchema.jobLevel, filterData.jobLevel));
+        }
         const data: ApplicantJob[] = await db.select({
             id: jobsTableSchema.id,
             title: jobsTableSchema.title,
@@ -50,13 +70,7 @@ export const getAllJobDataAction = async (): Promise<GetAllJobDataResponse> => {
         }).from(jobsTableSchema)
         .innerJoin(employersTableSchema,eq(jobsTableSchema.employerId,employersTableSchema.id))
         .innerJoin(usersTableSchema,eq(employersTableSchema.id,usersTableSchema.id))
-        .where(and(
-            isNull(jobsTableSchema.deletedAt),
-            or(
-                isNull(jobsTableSchema.expiresAt),
-                gte(jobsTableSchema.expiresAt,today)
-            )
-        )).orderBy(desc(jobsTableSchema.createdAt));
+        .where(and(...conditions)).orderBy(desc(jobsTableSchema.createdAt));
         return {status: true, data};
     }catch(error:any){
         return {status: false, message: error.message};

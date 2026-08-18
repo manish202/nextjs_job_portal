@@ -26,7 +26,7 @@ type ReusableInputProps<T extends FieldValues> = {
     type?: string;
 };
 
-const ReusableInput = <T extends FieldValues>({form,fieldName,label,placeholder,type="text"}:ReusableInputProps<T>) => {
+export const ReusableInput = <T extends FieldValues>({form,fieldName,label,placeholder,type="text"}:ReusableInputProps<T>) => {
     const error = form.formState.errors[fieldName];
     return (
         <div className="space-y-2">
@@ -77,7 +77,7 @@ type ReusableDropDownProps<T extends FieldValues> = {
     items: readonly string[];
 };
 
-const ReusableDropDown = <T extends FieldValues>({form,fieldName,label,placeholder,items}:ReusableDropDownProps<T>) => {
+export const ReusableDropDown = <T extends FieldValues>({form,fieldName,label,placeholder,items}:ReusableDropDownProps<T>) => {
     const error = form.formState.errors[fieldName];
     return (
         <div className="space-y-2">
