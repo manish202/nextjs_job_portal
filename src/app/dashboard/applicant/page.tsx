@@ -2,11 +2,14 @@ import React from "react";
 import { getCurrentUserDetails } from "@/features/auth/sessions";
 import { WelcomeCard, OverviewCard, ProfileIncompleteWarning } from "@/components/dashboard/OverviewCards";
 import AppliedJobsTable from "@/components/dashboard/AppliedJobsTable";
+import { getAllJobApplicationDataAction } from "@/app/dashboard/applicant/ApplicantJobDataAction";
 
 const ApplicantDashboardPage: React.FC = async () => {
     const {status,message,user,userDetails} = await getCurrentUserDetails('applicant');
     const {biography,dateOfBirth,nationality,experience,websiteUrl,location}:any = userDetails;
     const isProfileCompleted = biography && dateOfBirth && nationality && experience && websiteUrl && location;
+    const response = await getAllJobApplicationDataAction();
+    if(!response.status) return <h1>{response.message}</h1>
     return (
         <div className="space-y-8">
             <WelcomeCard name={user?.name} />
@@ -21,7 +24,7 @@ const ApplicantDashboardPage: React.FC = async () => {
                     settingPage="/dashboard/applicant/settings"
                 />
             )}
-            <AppliedJobsTable />
+            <AppliedJobsTable jobsData={response.data} />
         </div>
     )
 }

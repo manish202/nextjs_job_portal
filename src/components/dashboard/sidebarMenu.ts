@@ -42,6 +42,11 @@ export const applicantMenu = [
         icon: SearchIcon,
     },
     {
+        title: "Applied Jobs",
+        href: "/dashboard/applicant/applied-jobs",
+        icon: Users,
+    },
+    {
         title: "Settings",
         href: "/dashboard/applicant/settings",
         icon: Settings,

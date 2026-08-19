@@ -11,6 +11,8 @@ import db from "@/config/db";
 import { type JobApplicationData } from "@/zod_schema/applicationsSchema";
 import resumesTableSchema from "@/drizzle/table_schema/resumesTableSchema";
 import applicationsTableSchema from "@/drizzle/table_schema/applicationsTableSchema";
+import { currencySymbols } from "@/drizzle/table_schema/jobsTableSchema";
+import { APPLICATION_STATUS } from "@/drizzle/table_schema/applicationsTableSchema";
 
 type SalaryCurrency = typeof SALARY_CURRENCY[number];
 type SalaryPeriod = typeof SALARY_PERIOD[number];
@@ -187,6 +189,78 @@ export const getSingleJobApplicationDataAction = async (job_id:number): Promise<
             eq(applicationsTableSchema.applicantId,user.id)
         ));
         return {status: true, data: jobApplication};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}
+
+export type ApplicantApplication = {
+    applications: {
+        id: number;
+        jobId: number;
+        applicantId: number;
+        resumeId: number;
+        status: typeof APPLICATION_STATUS[number];
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+    };
+    jobs: {
+        id: number;
+        title: string;
+        employerId: number;
+        description: string;
+        tags: string | null;
+        minSalary: number | null;
+        maxSalary: number | null;
+        salaryCurrency: keyof typeof currencySymbols | null;
+        salaryPeriod: string | null;
+        location: string | null;
+        jobType: string | null;
+        workType: string | null;
+        jobLevel: string | null;
+        experience: string | null;
+        minEducation: string | null;
+        isFeatured: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        expiresAt: Date | null;
+    };
+    employers: {
+        id: number;
+        company_name: string;
+        description: string | null;
+        avatarUrl: string | null;
+        bannerImageUrl: string | null;
+        organizationType: string | null;
+        teamSize: string | null;
+        yearOfEstablishment: number | null;
+        websiteUrl: string | null;
+        location: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+    };
+};
+
+export type GetAllJobApplicationDataResponse = { status: true, data: any } | { status: false, message: string };
+
+export const getAllJobApplicationDataAction = async (): Promise<GetAllJobApplicationDataResponse> => {
+    try{
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'applicant') return {status: false,message: "forbidden"};
+        const jobApplications = await db.select({
+            applications: applicationsTableSchema,
+            jobs: jobsTableSchema,
+            employers: employersTableSchema
+        }).from(applicationsTableSchema)
+        .innerJoin(jobsTableSchema,eq(applicationsTableSchema.jobId,jobsTableSchema.id))
+        .leftJoin(employersTableSchema,eq(jobsTableSchema.employerId,employersTableSchema.id))
+        .where(eq(applicationsTableSchema.applicantId,user.id))
+        .orderBy(desc(applicationsTableSchema.createdAt));
+        return {status: true, data: jobApplications};
     }catch(error:any){
         return {status: false, message: error.message};
     }
