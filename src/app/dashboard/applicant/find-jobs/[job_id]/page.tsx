@@ -1,5 +1,5 @@
 import ApplicantSingleJobCard from "@/components/dashboard/ApplicantSingleJobCard";
-import { getSingleJobDetailsAction, type GetSingleJobDetailsResponse } from "@/app/dashboard/applicant/ApplicantJobDataAction";
+import { getSingleJobApplicationDataAction, getSingleJobDetailsAction, type GetSingleJobDetailsResponse } from "@/app/dashboard/applicant/ApplicantJobDataAction";
 
 type Props = { params: Promise<{ job_id: string}>}
 
@@ -9,9 +9,10 @@ const ApplicantJobShowingPage = async ({params}:Props) => {
     const response: GetSingleJobDetailsResponse = await getSingleJobDetailsAction(Math.abs(parseInt(job_id)));
     if(!response.status) return <h1>{response.message}</h1>
     if(!response.data) return <h1>Job Post Not Found</h1>
+    const jobApplicationData = await getSingleJobApplicationDataAction(Math.abs(parseInt(job_id)));
     return (
         <div className="space-y-8">
-            <ApplicantSingleJobCard job={response.data} />
+            <ApplicantSingleJobCard job={response.data} jobApplicationData={jobApplicationData} />
         </div>
     )
 }

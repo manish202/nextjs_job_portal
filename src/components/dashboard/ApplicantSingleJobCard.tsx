@@ -32,7 +32,7 @@ const InfoItem = ({icon,label,value,capitalize = false,}:InfoItemType) => {
     );
 };
 
-const ApplicantSingleJobCard = ({job}:{job:SingleApplicantJob}) => {
+const ApplicantSingleJobCard = ({job,jobApplicationData}:{job:SingleApplicantJob,jobApplicationData:any}) => {
     const currency = currencySymbols[job.salaryCurrency ?? "INR"];
     const [showForm,setShowForm] = useState(false);
     const toggleForm = () => setShowForm(old => !old);
@@ -65,7 +65,11 @@ const ApplicantSingleJobCard = ({job}:{job:SingleApplicantJob}) => {
                                 </p>
                             )}
                         </div>
-                        <Button onClick={toggleForm} size="lg">Apply Now</Button>
+                        {jobApplicationData?.data ? (
+                            <Button disabled={true} size="lg">Already Applied</Button>
+                        ) : (
+                            <Button onClick={toggleForm} size="lg">Apply Now</Button>
+                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -235,7 +239,11 @@ const ApplicantSingleJobCard = ({job}:{job:SingleApplicantJob}) => {
                     </Card>
                     <Card>
                         <CardContent className="p-5">
-                            <Button onClick={toggleForm} className="w-full" size="lg">Apply for this Job</Button>
+                            {jobApplicationData?.data ? (
+                                <Button disabled={true} size="lg">Already Applied</Button>
+                            ) : (
+                                <Button onClick={toggleForm} className="w-full" size="lg">Apply for this Job</Button>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

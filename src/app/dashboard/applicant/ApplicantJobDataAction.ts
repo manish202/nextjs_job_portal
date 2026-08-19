@@ -174,3 +174,20 @@ export const jobApplicationAction = async (data:JobApplicationData): Promise<Job
         return {status: false, message: "Job application failed due to some reasons."};
     }
 }
+
+export type GetSingleJobApplicationDataResponse = { status: true, data: any } | { status: false, message: string };
+
+export const getSingleJobApplicationDataAction = async (job_id:number): Promise<GetSingleJobApplicationDataResponse> => {
+    try{
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'applicant') return {status: false,message: "forbidden"};
+        const [jobApplication] = await db.select().from(applicationsTableSchema).where(and(
+            eq(applicationsTableSchema.jobId,job_id),
+            eq(applicationsTableSchema.applicantId,user.id)
+        ));
+        return {status: true, data: jobApplication};
+    }catch(error:any){
+        return {status: false, message: error.message};
+    }
+}
