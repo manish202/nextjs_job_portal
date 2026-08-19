@@ -9,6 +9,11 @@ export const employerMenu = [
         icon: LayoutDashboard,
     },
     {
+        title: "Applications",
+        href: "/dashboard/employer/received-applications",
+        icon: Users,
+    },
+    {
         title: "Post a Job",
         href: "/dashboard/employer/post-job",
         icon: PlusIcon,
@@ -18,11 +23,6 @@ export const employerMenu = [
         href: "/dashboard/employer/my-jobs",
         icon: Building2,
     },
-    // {
-    //     title: "Saved Candidates",
-    //     href: "/dashboard/employer/saved-candidates",
-    //     icon: Users,
-    // },
     {
         title: "Settings",
         href: "/dashboard/employer/settings",
