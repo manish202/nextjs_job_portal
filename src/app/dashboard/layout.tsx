@@ -30,4 +30,5 @@ const EmployerLayout = async ({children}: Readonly<{children: React.ReactNode}>)
     )
 }
 
+export const dynamic = "force-dynamic";
 export default EmployerLayout;
