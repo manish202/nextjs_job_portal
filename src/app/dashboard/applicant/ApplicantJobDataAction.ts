@@ -8,6 +8,9 @@ import { SALARY_CURRENCY, SALARY_PERIOD, WORK_TYPE, JOB_TYPE, JOB_LEVEL, MIN_EDU
 import { and, or, eq, gte, isNull, desc, like } from 'drizzle-orm';
 import db from "@/config/db";
 // import { type DefaultValues } from "@/components/dashboard/ApplicantJobCardContainer";
+import { type JobApplicationData } from "@/zod_schema/applicationsSchema";
+import resumesTableSchema from "@/drizzle/table_schema/resumesTableSchema";
+import applicationsTableSchema from "@/drizzle/table_schema/applicationsTableSchema";
 
 type SalaryCurrency = typeof SALARY_CURRENCY[number];
 type SalaryPeriod = typeof SALARY_PERIOD[number];
@@ -150,5 +153,24 @@ export const getSingleJobDetailsAction = async (job_id:number): Promise<GetSingl
         return {status: true, data: data[0]};
     }catch(error:any){
         return {status: false, message: error.message};
+    }
+}
+
+export type JobApplicationActionResponse = {status: true, message: string} | {status: false, message: string};
+
+export const jobApplicationAction = async (data:JobApplicationData): Promise<JobApplicationActionResponse> => {
+    try{
+        const {jobId,linkedinUrl,coverLetter} = data;
+        const {status,message,user} = await getCurrentUser();
+        if(!status) return {status,message};
+        if(user?.role !== 'applicant') return {status: false,message: "forbidden"};
+        await db.transaction(async (tx) => {
+            const [result] = await tx.insert(resumesTableSchema).values({applicantId:user.id,linkedinUrl,coverLetter});
+            await tx.insert(applicationsTableSchema).values({jobId,applicantId:user.id,resumeId:result.insertId});
+        });
+        return {status: true, message: "Applied for job successfully"};
+    }catch(error:any){
+        console.log(error.message);
+        return {status: false, message: "Job application failed due to some reasons."};
     }
 }

@@ -3,7 +3,8 @@ import { type SingleApplicantJob } from "@/app/dashboard/applicant/ApplicantJobD
 import {
     ArrowLeft, Banknote, BriefcaseBusiness, Building2, CalendarDays, GraduationCap, Globe, MapPin, Users,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import ApplyNowPopupForm from "./ApplyNowPopupForm";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ const InfoItem = ({icon,label,value,capitalize = false,}:InfoItemType) => {
 
 const ApplicantSingleJobCard = ({job}:{job:SingleApplicantJob}) => {
     const currency = currencySymbols[job.salaryCurrency ?? "INR"];
+    const [showForm,setShowForm] = useState(false);
+    const toggleForm = () => setShowForm(old => !old);
     return (
         <div className="mx-auto max-w-6xl space-y-6">
             <Button variant="ghost" className="px-0">
@@ -62,7 +65,7 @@ const ApplicantSingleJobCard = ({job}:{job:SingleApplicantJob}) => {
                                 </p>
                             )}
                         </div>
-                        <Button size="lg">Apply Now</Button>
+                        <Button onClick={toggleForm} size="lg">Apply Now</Button>
                     </div>
                 </CardContent>
             </Card>
@@ -232,11 +235,12 @@ const ApplicantSingleJobCard = ({job}:{job:SingleApplicantJob}) => {
                     </Card>
                     <Card>
                         <CardContent className="p-5">
-                            <Button className="w-full" size="lg">Apply for this Job</Button>
+                            <Button onClick={toggleForm} className="w-full" size="lg">Apply for this Job</Button>
                         </CardContent>
                     </Card>
                 </div>
             </div>
+            {showForm && <ApplyNowPopupForm toggleForm={toggleForm} jobId={job.id} />}
         </div>
     )
 }
